@@ -1,0 +1,19 @@
+{
+  "name": "leaderboardsdk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "modal-window.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bh-full-stack/LeaderboardSDK.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bh-full-stack/LeaderboardSDK/issues"
+  },
+  "homepage": "https://github.com/bh-full-stack/LeaderboardSDK#readme"
+}
