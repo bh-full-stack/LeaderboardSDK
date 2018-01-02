@@ -1,4 +1,40 @@
 var modalWindow = {
+    config: {},
+    score: 0,
+
+    init: function(config) {
+        modalWindow.config = config;
+        console.log(config);
+        if (typeof $ === "undefined") {
+            console.log("Leaderboard SDK requires jQuery");
+        }
+        $.get(modalWindow.config.pathToPackage + "/modal-window.html", function(modalWindowHtml) {
+            $(modalWindow.config.container).append(modalWindowHtml);
+            modalWindow.setEventHandlers();
+        });
+    },
+
+    setEventHandlers: function() {
+        document.querySelector(".modal-window__form").onsubmit = function(event) {
+            event.preventDefault();
+            var name = document.querySelector("#name").value;
+            localStorage.name = name;
+            modalWindow.showMessage(name);
+        };
+
+        document.querySelector("#new_game_button").onclick = function() {
+            modalWindow.hide();
+            modalWindow.config.eventHandlers.onClickNewGameBtn();
+        };
+
+        document.querySelector("#clear_name_button").onclick = function() {
+            localStorage.removeItem("name");
+            modalWindow.showForm();
+        };
+        document.querySelector("#save_score_button").onclick = function() {
+            modalWindow.showScoreSaved(localStorage.name, modalWindow.score);
+        };
+    },
 
     resetElements: function() {
         document.querySelectorAll(".modal-window *").forEach(function(element) {
@@ -12,13 +48,12 @@ var modalWindow = {
         });
     },
 
-    show: function(container, name, score) {
-        $.get("modal-window.html", function(modalWindowHtml) {
-            $(container).html(modalWindowHtml);
-        });
+    show: function(name, score) {
+        modalWindow.score = score;
         document.querySelector(".modal-window").style.display = "block";
         modalWindow.resetElements();
-        document.querySelector(".modal-window__score__value").textContent = score;
+        document.querySelector(".modal-window__score__value")
+            .textContent = modalWindow.score;
         if (name === undefined) {
             modalWindow.showElements([".modal-window__form"]);
             document.querySelector("#name").focus();
@@ -67,7 +102,7 @@ var modalWindow = {
             "http://leaderboard.local/save_data.php",
             {
                 nick: name,
-                game: "Tetris",
+                game: modalWindow.config.game,
                 score: score
             },
             function(response) {
