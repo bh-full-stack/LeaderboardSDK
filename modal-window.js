@@ -12,7 +12,10 @@ var modalWindow = {
         });
     },
 
-    show: function(name, score) {
+    show: function(container, name, score) {
+        $.get("modal-window.html", function(modalWindowHtml) {
+            $(container).html(modalWindowHtml);
+        });
         document.querySelector(".modal-window").style.display = "block";
         modalWindow.resetElements();
         document.querySelector(".modal-window__score__value").textContent = score;
