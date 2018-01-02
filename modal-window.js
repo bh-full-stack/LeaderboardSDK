@@ -4,7 +4,6 @@ var modalWindow = {
 
     init: function(config) {
         modalWindow.config = config;
-        console.log(config);
         if (typeof $ === "undefined") {
             console.log("Leaderboard SDK requires jQuery");
         }
@@ -99,7 +98,7 @@ var modalWindow = {
         modalWindow.resetElements();
         modalWindow.showElements([".modal-window__loader-text"]);
         $.post(
-            "http://leaderboard.local/save_data.php",
+            "http://leaderboard.local/ScoreController.php",
             {
                 nick: name,
                 game: modalWindow.config.game,
