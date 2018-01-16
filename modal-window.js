@@ -98,7 +98,7 @@ var modalWindow = {
         modalWindow.resetElements();
         modalWindow.showElements([".modal-window__loader-text"]);
         $.post(
-            "http://leaderboard.local/ScoreController.php",
+            "http://leaderboard.local/rounds",
             {
                 nick: name,
                 game: modalWindow.config.game,
