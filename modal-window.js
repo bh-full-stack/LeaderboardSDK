@@ -98,9 +98,9 @@ var modalWindow = {
         modalWindow.resetElements();
         modalWindow.showElements([".modal-window__loader-text"]);
         $.post(
-            "http://leaderboard.local/rounds",
+            "http://leaderboard.local/api/rounds",
             {
-                nick: name,
+                name: name,
                 game: modalWindow.config.game,
                 score: score
             },
@@ -108,7 +108,7 @@ var modalWindow = {
                 modalWindow.resetElements();
                 modalWindow.showElements([".modal-window__saved-score-text", "#new_game_button"]);
                 document.querySelector(".modal-window__saved-score-text .player-name")
-                    .textContent = ", " + response.nick;
+                    .textContent = ", " + response.name;
             },
             "json"
         ).fail(function(xhr) {
