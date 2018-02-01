@@ -31,8 +31,9 @@ var modalWindow = {
             modalWindow.showForm();
         };
         document.querySelector("#save_score_button").onclick = function() {
-            modalWindow.showScoreSaved(localStorage.name, modalWindow.score);
+            modalWindow.checkNameRegistered(localStorage.name);
         };
+        
     },
 
     resetElements: function() {
@@ -94,11 +95,28 @@ var modalWindow = {
         document.querySelector("#name").focus();
     },
 
+    checkNameRegistered: function(name) {
+        $.get(
+            "http://api.leaderboard.local/api/profile/" + name,
+            [],
+            function(response) {
+                console.log(response);
+                if (response.activated_at) {
+                    console.log('Login');
+                    modalWindow.resetElements();
+                    modalWindow.showElements(['.modal-window__login'])
+                } else {
+                    modalWindow.showScoreSaved(name, modalWindow.score);
+                }
+            }
+        )
+    },
+
     showScoreSaved: function(name, score) {
         modalWindow.resetElements();
         modalWindow.showElements([".modal-window__loader-text"]);
         $.post(
-            "http://leaderboard.local/api/rounds",
+            "http://api.leaderboard.local/api/rounds",
             {
                 name: name,
                 game: modalWindow.config.game,
