@@ -1,5 +1,6 @@
 .modal-window__thank-you-text, .modal-window__loader-text,
 .modal-window__saved-score-text, .modal-window__save-error-text,
-#new_game_button, #clear_name_button, #save_score_button, .modal-window__login-form {
+#new_game_button, #clear_name_button, #save_score_button, .modal-window__login-form,
+#navigate_to_login_button {
     display: none;
 }

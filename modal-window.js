@@ -36,6 +36,10 @@ var modalWindow = {
         document.querySelector("#save_score_button").onclick = function () {
             modalWindow.checkNameRegistered(localStorage.name);
         };
+        document.querySelector("#navigate_to_login_button").onclick = function () {
+            localStorage.removeItem("token");
+            modalWindow.checkNameRegistered(localStorage.name);
+        };
         document.querySelector("#change_name_button").onclick = function () {
             localStorage.removeItem("name");
             localStorage.removeItem("token");
@@ -143,8 +147,9 @@ var modalWindow = {
     showScoreSaved: function (name, score) {
         modalWindow.resetElements();
         modalWindow.showElements([".modal-window__loader-text"]);
-
+        var apiEndpoint = "rounds/save-without-account";
         if (localStorage.getItem("token")) {
+            apiEndpoint = "rounds/save-with-account"
             $.ajaxSetup({
                 headers: {
                     "Authorization": "Bearer " + localStorage.getItem("token")
@@ -153,7 +158,7 @@ var modalWindow = {
         }
 
         $.post(
-            modalWindow.apiUrl + "rounds",
+            modalWindow.apiUrl + apiEndpoint,
             {
                 name: name,
                 game: modalWindow.config.game,
@@ -172,6 +177,9 @@ var modalWindow = {
             modalWindow.resetElements();
             modalWindow.showElements([".modal-window__save-error-text", "#new_game_button"]);
             document.querySelector(".error-message").textContent = message;
+            if (xhr.status == 401) {
+                modalWindow.showElements(["#navigate_to_login_button"])
+            }
         });
     }
 };
