@@ -30,7 +30,6 @@ var modalWindow = {
         document.querySelector("#clear_name_button").onclick = function () {
             localStorage.removeItem("name");
             localStorage.removeItem("token");
-            console.log(localStorage.getItem("token"));
             modalWindow.showForm();
         };
         document.querySelector("#save_score_button").onclick = function () {
@@ -43,7 +42,6 @@ var modalWindow = {
         document.querySelector("#change_name_button").onclick = function () {
             localStorage.removeItem("name");
             localStorage.removeItem("token");
-            console.log(localStorage.getItem("token"));
             modalWindow.showForm();
         };
         document.querySelector(".modal-window__login-form").onsubmit = function (event) {
@@ -140,7 +138,6 @@ var modalWindow = {
                 password: password
             },
             function (response) {
-                console.log(response);
                 localStorage.setItem("token", response.token);
                 localStorage.setItem("player", JSON.stringify(response.player));
                 modalWindow.showScoreSaved(response.player.name, modalWindow.score);
@@ -183,7 +180,6 @@ var modalWindow = {
             "json"
         ).fail(function (xhr) {
             var message = xhr.responseJSON ? xhr.responseJSON.message : "Unknown server error";
-            console.log(xhr);
             modalWindow.resetElements();
             modalWindow.showElements([".modal-window__save-error-text", "#new_game_button"]);
             document.querySelector(".error-message").textContent = message;
