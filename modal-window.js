@@ -83,6 +83,8 @@ var modalWindow = {
             ]);
             document.querySelector(".player-name")
                 .textContent = (name == "") ? name : ", " + name;
+            document.querySelector("#clear_name_button")
+                .value = (localStorage.getItem("token")) ? "Logout" : "Clear Name";
         }
     },
 
@@ -97,6 +99,8 @@ var modalWindow = {
         ]);
         document.querySelector(".modal-window__thank-you-text .player-name")
             .textContent = (name == "") ? name : ", " + name;
+        document.querySelector("#clear_name_button")
+            .value = (localStorage.getItem("token")) ? "Logout" : "Clear Name";
     },
 
     hide: function () {
@@ -139,7 +143,13 @@ var modalWindow = {
                 console.log(response);
                 localStorage.setItem("token", response.token);
                 localStorage.setItem("player", JSON.stringify(response.player));
-                modalWindow.show(response.player.name, modalWindow.score);
+                modalWindow.showScoreSaved(response.player.name, modalWindow.score);
+            }
+        ).fail(
+            function (xhr) {
+                if (xhr.status == 401) {
+                    window.alert(xhr.responseJSON.message);
+                }
             }
         );
     },
