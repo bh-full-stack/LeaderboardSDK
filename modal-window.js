@@ -1,54 +1,66 @@
 var modalWindow = {
     config: {},
     score: 0,
+    apiUrl: "http://api.leaderboard.local/api/",
 
-    init: function(config) {
+    init: function (config) {
         modalWindow.config = config;
         if (typeof $ === "undefined") {
             console.log("Leaderboard SDK requires jQuery");
         }
-        $.get(modalWindow.config.pathToPackage + "/modal-window.html", function(modalWindowHtml) {
+        $.get(modalWindow.config.pathToPackage + "/modal-window.html", function (modalWindowHtml) {
             $(modalWindow.config.container).append(modalWindowHtml);
             modalWindow.setEventHandlers();
         });
     },
 
-    setEventHandlers: function() {
-        document.querySelector(".modal-window__form").onsubmit = function(event) {
+    setEventHandlers: function () {
+        document.querySelector(".modal-window__form").onsubmit = function (event) {
             event.preventDefault();
             var name = document.querySelector("#name").value;
             localStorage.name = name;
             modalWindow.showMessage(name);
         };
 
-        document.querySelector("#new_game_button").onclick = function() {
+        document.querySelector("#new_game_button").onclick = function () {
             modalWindow.hide();
             modalWindow.config.eventHandlers.onClickNewGameBtn();
         };
 
-        document.querySelector("#clear_name_button").onclick = function() {
+        document.querySelector("#clear_name_button").onclick = function () {
             localStorage.removeItem("name");
+            localStorage.removeItem("token");
+            console.log(localStorage.getItem("token"));
             modalWindow.showForm();
         };
-        document.querySelector("#save_score_button").onclick = function() {
+        document.querySelector("#save_score_button").onclick = function () {
             modalWindow.checkNameRegistered(localStorage.name);
         };
-        
+        document.querySelector("#change_name_button").onclick = function () {
+            localStorage.removeItem("name");
+            localStorage.removeItem("token");
+            console.log(localStorage.getItem("token"));
+            modalWindow.showForm();
+        };
+        document.querySelector(".modal-window__login-form").onsubmit = function (event) {
+            event.preventDefault();
+            modalWindow.login();
+        }
     },
 
-    resetElements: function() {
-        document.querySelectorAll(".modal-window *").forEach(function(element) {
+    resetElements: function () {
+        document.querySelectorAll(".modal-window *").forEach(function (element) {
             element.removeAttribute("style");
         });
     },
 
-    showElements: function(selectors) {
-        selectors.forEach(function(selector){
+    showElements: function (selectors) {
+        selectors.forEach(function (selector) {
             document.querySelector(selector).style.display = "block";
         });
     },
 
-    show: function(name, score) {
+    show: function (name, score) {
         modalWindow.score = score;
         document.querySelector(".modal-window").style.display = "block";
         modalWindow.resetElements();
@@ -70,7 +82,7 @@ var modalWindow = {
         }
     },
 
-    showMessage: function(name) {
+    showMessage: function (name) {
         modalWindow.resetElements();
         modalWindow.showElements([
             ".modal-window__message",
@@ -83,28 +95,26 @@ var modalWindow = {
             .textContent = (name == "") ? name : ", " + name;
     },
 
-    hide: function() {
+    hide: function () {
         modalWindow.resetElements();
         document.querySelector(".modal-window").style.display = "none";
     },
 
-    showForm: function() {
+    showForm: function () {
         modalWindow.resetElements();
         modalWindow.showElements([".modal-window__form"]);
         document.querySelector("#name").value = "";
         document.querySelector("#name").focus();
     },
 
-    checkNameRegistered: function(name) {
+    checkNameRegistered: function (name) {
         $.get(
-            "http://api.leaderboard.local/api/profile/" + name,
+            modalWindow.apiUrl + "profile/" + name,
             [],
-            function(response) {
-                console.log(response);
-                if (response.activated_at) {
-                    console.log('Login');
+            function (response) {
+                if (response.activated_at && !localStorage.getItem("token")) {
                     modalWindow.resetElements();
-                    modalWindow.showElements(['.modal-window__login'])
+                    modalWindow.showElements(['.modal-window__login-form'])
                 } else {
                     modalWindow.showScoreSaved(name, modalWindow.score);
                 }
@@ -112,24 +122,51 @@ var modalWindow = {
         )
     },
 
-    showScoreSaved: function(name, score) {
+    login: function () {
+        var email = document.querySelector("#email").value;
+        var password = document.querySelector("#password").value;
+        $.post(
+            modalWindow.apiUrl + "login",
+            {
+                email: email,
+                password: password
+            },
+            function (response) {
+                console.log(response);
+                localStorage.setItem("token", response.token);
+                localStorage.setItem("player", JSON.stringify(response.player));
+                modalWindow.show(response.player.name, modalWindow.score);
+            }
+        );
+    },
+
+    showScoreSaved: function (name, score) {
         modalWindow.resetElements();
         modalWindow.showElements([".modal-window__loader-text"]);
+
+        if (localStorage.getItem("token")) {
+            $.ajaxSetup({
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem("token")
+                }
+            });
+        }
+
         $.post(
-            "http://api.leaderboard.local/api/rounds",
+            modalWindow.apiUrl + "rounds",
             {
                 name: name,
                 game: modalWindow.config.game,
                 score: score
             },
-            function(response) {
+            function (response) {
                 modalWindow.resetElements();
                 modalWindow.showElements([".modal-window__saved-score-text", "#new_game_button"]);
                 document.querySelector(".modal-window__saved-score-text .player-name")
                     .textContent = ", " + response.player.name;
             },
             "json"
-        ).fail(function(xhr) {
+        ).fail(function (xhr) {
             var message = xhr.responseJSON ? xhr.responseJSON.message : "Unknown server error";
             console.log(xhr);
             modalWindow.resetElements();
