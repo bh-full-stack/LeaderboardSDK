@@ -117,7 +117,7 @@ var modalWindow = {
 
     checkNameRegistered: function (name) {
         $.get(
-            modalWindow.apiUrl + "profile/" + name,
+            modalWindow.apiUrl + "player/" + name,
             [],
             function (response) {
                 if (response.activated_at && !localStorage.getItem("token")) {
