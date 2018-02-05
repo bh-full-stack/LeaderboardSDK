@@ -176,6 +176,7 @@ var modalWindow = {
                 modalWindow.showElements([".modal-window__saved-score-text", "#new_game_button"]);
                 document.querySelector(".modal-window__saved-score-text .player-name")
                     .textContent = ", " + response.player.name;
+                localStorage.name = response.player.name;
             },
             "json"
         ).fail(function (xhr) {
