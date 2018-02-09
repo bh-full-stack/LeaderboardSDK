@@ -29,19 +29,19 @@ var modalWindow = {
 
         document.querySelector("#clear_name_button").onclick = function () {
             localStorage.removeItem("name");
-            localStorage.removeItem("token");
+            sessionStorage.removeItem("token");
             modalWindow.showForm();
         };
         document.querySelector("#save_score_button").onclick = function () {
             modalWindow.checkNameRegistered(localStorage.name);
         };
         document.querySelector("#navigate_to_login_button").onclick = function () {
-            localStorage.removeItem("token");
+            sessionStorage.removeItem("token");
             modalWindow.checkNameRegistered(localStorage.name);
         };
         document.querySelector("#change_name_button").onclick = function () {
             localStorage.removeItem("name");
-            localStorage.removeItem("token");
+            sessionStorage.removeItem("token");
             modalWindow.showForm();
         };
         document.querySelector(".modal-window__login-form").onsubmit = function (event) {
@@ -82,7 +82,7 @@ var modalWindow = {
             document.querySelector(".player-name")
                 .textContent = (name == "") ? name : ", " + name;
             document.querySelector("#clear_name_button")
-                .value = (localStorage.getItem("token")) ? "Logout" : "Clear Name";
+                .value = (sessionStorage.getItem("token")) ? "Logout" : "Clear Name";
         }
     },
 
@@ -98,7 +98,7 @@ var modalWindow = {
         document.querySelector(".modal-window__thank-you-text .player-name")
             .textContent = (name == "") ? name : ", " + name;
         document.querySelector("#clear_name_button")
-            .value = (localStorage.getItem("token")) ? "Logout" : "Clear Name";
+            .value = (sessionStorage.getItem("token")) ? "Logout" : "Clear Name";
     },
 
     hide: function () {
@@ -118,7 +118,7 @@ var modalWindow = {
             modalWindow.apiUrl + "player/" + name,
             [],
             function (response) {
-                if (response.activated_at && !localStorage.getItem("token")) {
+                if (response.activated_at && !sessionStorage.getItem("token")) {
                     modalWindow.resetElements();
                     modalWindow.showElements(['.modal-window__login-form'])
                 } else {
@@ -138,8 +138,8 @@ var modalWindow = {
                 password: password
             },
             function (response) {
-                localStorage.setItem("token", response.token);
-                localStorage.setItem("player", JSON.stringify(response.player));
+                sessionStorage.setItem("token", response.token);
+                sessionStorage.setItem("player", JSON.stringify(response.player));
                 modalWindow.showScoreSaved(response.player.name, modalWindow.score);
             }
         ).fail(
@@ -155,11 +155,11 @@ var modalWindow = {
         modalWindow.resetElements();
         modalWindow.showElements([".modal-window__loader-text"]);
         var apiEndpoint = "rounds/save-without-account";
-        if (localStorage.getItem("token")) {
+        if (sessionStorage.getItem("token")) {
             apiEndpoint = "rounds/save-with-account"
             $.ajaxSetup({
                 headers: {
-                    "Authorization": "Bearer " + localStorage.getItem("token")
+                    "Authorization": "Bearer " + sessionStorage.getItem("token")
                 }
             });
         }
