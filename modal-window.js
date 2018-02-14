@@ -114,18 +114,23 @@ var modalWindow = {
     },
 
     checkNameRegistered: function (name) {
-        $.get(
-            modalWindow.apiUrl + "player/" + name,
-            [],
-            function (response) {
-                if (response.activated_at && !sessionStorage.getItem("token")) {
-                    modalWindow.resetElements();
-                    modalWindow.showElements(['.modal-window__login-form'])
-                } else {
-                    modalWindow.showScoreSaved(name, modalWindow.score);
+        if (name) {
+            $.get(
+                modalWindow.apiUrl + "player/" + name,
+                [],
+                function (response) {
+                    if (response.activated_at && !sessionStorage.getItem("token")) {
+
+                        modalWindow.resetElements();
+                        modalWindow.showElements(['.modal-window__login-form'])
+                    } else {
+                        modalWindow.showScoreSaved(name, modalWindow.score);
+                    }
                 }
-            }
-        )
+            )
+        } else {
+            modalWindow.showForm();
+        }
     },
 
     login: function () {
