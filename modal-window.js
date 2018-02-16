@@ -1,13 +1,20 @@
 var modalWindow = {
     config: {},
     score: 0,
-    apiUrl: "http://api.leaderboard.local/api/",
+    apiUrls: {
+        test: "http://api.leaderboard.local/api/",
+        live: "http://api.leaderboard.thor.stylersdev.com/api/"
+    },
+    apiUrl: undefined,
 
     init: function (config) {
         modalWindow.config = config;
+        modalWindow.apiUrl = modalWindow.apiUrls[modalWindow.config.env];
+
         if (typeof $ === "undefined") {
             console.log("Leaderboard SDK requires jQuery");
         }
+
         $.get(modalWindow.config.pathToPackage + "/modal-window.html", function (modalWindowHtml) {
             $(modalWindow.config.container).append(modalWindowHtml);
             modalWindow.setEventHandlers();
